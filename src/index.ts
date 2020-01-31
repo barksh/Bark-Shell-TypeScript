@@ -6,6 +6,7 @@
 
 export * from "./declare";
 export * from "./shell/bot";
+export * from "./shell/declare";
 export * from "./shell/shell";
 export * from "./shell/topic";
 export * from "./socket/declare";

@@ -20,24 +20,48 @@ BarkSocket.extend(app.http)
     .declareUserMessageFunction(async (user: BarkUser, message: string, executer: MiddleResponseExecuter) => {
 
         const shell: BarkShell = BarkShell.create();
-        const firstTopic: BarkTopic = BarkTopic.create('greeting');
-        const secondTopic: BarkTopic = BarkTopic.create('ask-age');
 
-        firstTopic.addExample('Hello').addExample(`How's your day?`);
-        secondTopic.addExample(`What's your age`).addExample(`How old are you`);
+        const greetingTopic: BarkTopic = BarkTopic.create('greeting')
+            .addExample('Hello')
+            .addExample(`How's your day?`)
+            .addResponses(`I'm fine thank you, and you?`);
+        const askAgeTopic: BarkTopic = BarkTopic.create('ask-age')
+            .addExample(`What's your age`)
+            .addExample(`How old are you`)
+            .addResponse(`I'm 0`);
+        const listTopic: BarkTopic = BarkTopic.create('ask-age')
+            .addExample(`Add to my list`)
+            .addExample(`Things to do`)
+            .useExecutable((user: BarkUser, message: string) => {
+                return '';
+            });
 
-        shell.addTopic(firstTopic).addTopic(secondTopic);
+        shell.addTopic(greetingTopic).addTopic(askAgeTopic);
         const bot: BarkBot = shell.generate();
 
-        executer({
-            type: RESPONSE_TYPE.TEXT,
-            message: `Loading`,
-        });
-        await new Promise((resolve) => setTimeout(resolve, TIME_IN_MILLISECONDS.SECOND));
-        return {
-            type: RESPONSE_TYPE.TEXT,
-            message: `${user.username}, you said ${message}`,
-        };
+        switch (user.status) {
+            case 'initial': {
+                const topic: BarkTopic = bot.answer(message);
+                const response: string = await topic.autoResponse(user, message);
+
+                return {
+                    type: RESPONSE_TYPE.TEXT,
+                    message: `${user.username}, you said ${message}`,
+                };
+            }
+            case 'batch': {
+
+                executer({
+                    type: RESPONSE_TYPE.TEXT,
+                    message: `Adding ${message} to your list`,
+                });
+                await new Promise((resolve) => setTimeout(resolve, TIME_IN_MILLISECONDS.SECOND));
+                return {
+                    type: RESPONSE_TYPE.TEXT,
+                    message: `${message}, added`,
+                };
+            }
+        }
     })
     .declareUserGreetingFunction((user: BarkUser) => {
         return {

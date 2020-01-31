@@ -6,4 +6,7 @@
 
 import { BarkUser } from "../status/user";
 
-export type TopicExecutable = (user: BarkUser, message: string) => string;
+export type TopicExecutable = (user: BarkUser, message: string) => (
+    string
+    | Promise<string>
+);
