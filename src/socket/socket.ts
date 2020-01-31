@@ -84,10 +84,10 @@ export class BarkSocket {
         }
         if (Array.isArray(response)) {
             for (const each of response) {
-                socket.emit('message-response', each);
+                socket.emit('message', each);
             }
         } else {
-            socket.emit('message-response', response);
+            socket.emit('message', response);
         }
     }
 

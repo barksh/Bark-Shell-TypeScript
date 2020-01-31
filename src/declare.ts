@@ -17,7 +17,7 @@ export type BarkShellSuggestion = {
 
 export type BarkShellResponse = BarkShellResponseDynamic & {
 
-    readonly suggestions: BarkShellSuggestion[];
+    readonly suggestions?: BarkShellSuggestion[];
 };
 
 export type BarkShellResponseDynamic = {
