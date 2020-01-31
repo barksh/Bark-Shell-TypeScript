@@ -7,29 +7,22 @@
 import { SudooExpress, SudooExpressApplication } from "@sudoo/express";
 import { Request, Response } from "express";
 import * as Path from "path";
-import * as SocketIO from "socket.io";
+import { BarkSocket, BarkUser } from "../src";
 
 const setting: SudooExpressApplication = SudooExpressApplication.create('Bark Shell - Example', "1.0.0");
 const app: SudooExpress = SudooExpress.create(setting);
 
-const io: SocketIO.Server = SocketIO(app.http);
+const io: BarkSocket = BarkSocket.extend(app.http);
+io.declareUserInitiateFunction((headers) => {
+    return BarkUser.create(headers.username, 'initial');
+});
+io.declareUserMessageFunction((user: BarkUser, message: string) => {
+    console.log(message);
+    return null;
+});
 
 app.express.get('/', (req: Request, res: Response) => {
     res.sendFile(Path.join(__dirname, '..', 'public', 'index.html'));
-});
-
-io.on('connection', (socket: SocketIO.Socket) => {
-
-    console.log(socket.handshake);
-    console.log('a user connected');
-
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-    });
-
-    socket.on('chat message', (msg: string) => {
-        console.log(msg);
-    });
 });
 
 // tslint:disable-next-line: no-magic-numbers
