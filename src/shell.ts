@@ -1,7 +1,7 @@
 /**
  * @author WMXPY
  * @namespace Bark_Shell
- * @description Class
+ * @description Shell
  */
 
 export class BarkShell {

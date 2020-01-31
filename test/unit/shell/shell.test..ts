@@ -1,7 +1,7 @@
 /**
  * @author WMXPY
  * @namespace Bark_Shell
- * @description Bark-Shell
+ * @description Shell
  * @override Unit
  */
 
