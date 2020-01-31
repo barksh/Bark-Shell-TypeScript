@@ -20,6 +20,13 @@ export class BarkTopic {
         this._examples = [];
     }
 
+    public get name(): string {
+        return this._topicName;
+    }
+    public get examples(): string[] {
+        return this._examples;
+    }
+
     public addExample(example: string): this {
 
         this._examples.push(example);
