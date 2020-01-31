@@ -7,8 +7,7 @@
 
 import { expect } from 'chai';
 import * as Chance from 'chance';
-import { BarkShell, BarkTopic } from '../../../src';
-import { BarkBot } from '../../../src/bot';
+import { BarkBot, BarkShell, BarkTopic } from '../../../src';
 
 describe('Given {BarkShell} Class - Simple Simulate', (): void => {
 

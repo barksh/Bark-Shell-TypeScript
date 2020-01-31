@@ -19,6 +19,8 @@ app.express.get('/', (req: Request, res: Response) => {
 });
 
 io.on('connection', (socket: SocketIO.Socket) => {
+
+    console.log(socket.handshake);
     console.log('a user connected');
 
     socket.on('disconnect', () => {
