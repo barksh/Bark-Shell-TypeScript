@@ -1,0 +1,41 @@
+{
+  "name": "bark-shell",
+  "version": "0.0.0",
+  "description": ":penguin: Bark Shell Server for TypeScript",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/barksh/Bark-Shell-TypeScript.git"
+  },
+  "keywords": [
+    "bark-shell"
+  ],
+  "author": "WMXPY",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/barksh/Bark-Shell-TypeScript/issues"
+  },
+  "homepage": "https://github.com/barksh/Bark-Shell-TypeScript#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@sudoo/io": "^1.6.2",
+    "@sudoo/triforce": "^2.1.0"
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "instrument": true,
+    "reporter": [
+      "json",
+      "text-summary"
+    ],
+    "report-dir": "coverage",
+    "require": [
+      "./test/tshook.js"
+    ],
+    "sourceMap": true
+  }
+}

@@ -4,3 +4,5 @@
  * @description Index
  */
 
+export * from "./bark-shell";
+
