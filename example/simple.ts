@@ -13,7 +13,7 @@ import { BarkBot, BarkShell, BarkSocket, BarkTopic, BarkUser, MiddleResponseExec
 const setting: SudooExpressApplication = SudooExpressApplication.create('Bark Shell - Example', "1.0.0");
 const app: SudooExpress = SudooExpress.create(setting);
 
-BarkSocket.extend(app.http)
+BarkSocket.create()
     .declareUserInitiateFunction((headers) => {
         return BarkUser.create(headers.username, 'initial');
     })
@@ -81,7 +81,7 @@ BarkSocket.extend(app.http)
             message: `Hello ${user.username}`,
         };
     })
-    .initial();
+    .extend(app.http);
 
 app.express.get('/', (req: Request, res: Response) => {
     res.sendFile(Path.join(__dirname, '..', 'public', 'index.html'));

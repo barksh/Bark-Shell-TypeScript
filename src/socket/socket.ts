@@ -11,22 +11,21 @@ import { MiddleResponseExecuter, UserDisconnectFunction, UserFunctionResponse, U
 
 export class BarkSocket {
 
-    public static extend(server: HTTP.Server): BarkSocket {
+    public static create(): BarkSocket {
 
-        const io: SocketIO.Server = SocketIO(server);
-        return new BarkSocket(io);
+        return new BarkSocket();
     }
 
-    private readonly _io: SocketIO.Server;
+    private _io: SocketIO.Server | null;
 
     private _userInitiateFunction: UserInitiateFunction | null;
     private _userDisconnectFunction: UserDisconnectFunction | null;
     private _userGreetingFunction: UserGreetingFunction | null;
     private _userMessageFunction: UserMessageFunction | null;
 
-    private constructor(io: SocketIO.Server) {
+    private constructor() {
 
-        this._io = io;
+        this._io = null;
         this._userInitiateFunction = null;
         this._userDisconnectFunction = null;
         this._userGreetingFunction = null;
@@ -50,8 +49,9 @@ export class BarkSocket {
         return this;
     }
 
-    public initial() {
+    public extend(server: HTTP.Server) {
 
+        this._io = SocketIO(server);
         this._io.on('connection', async (socket: SocketIO.Socket) => {
 
             const userInitiateFunction: UserInitiateFunction = this._assertUserInitiateFunction();
