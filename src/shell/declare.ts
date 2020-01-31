@@ -8,5 +8,7 @@ import { BarkUser } from "../status/user";
 
 export type TopicExecutable = (user: BarkUser, message: string) => (
     string
+    | string[]
     | Promise<string>
+    | Promise<string[]>
 );

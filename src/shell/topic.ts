@@ -55,7 +55,16 @@ export class BarkTopic {
             throw new Error('[BARK-SHELL] Executable Required');
         }
 
-        const result: string = await Promise.resolve(this._executable(user, message));
+        const result: string | string[] = await Promise.resolve(this._executable(user, message));
+
+        if (Array.isArray(result)) {
+
+            if (result.length === 0) {
+                throw new Error('[BARK-SHELL] At least one response required - Executable');
+            }
+            const index: number = randomIntegerBelow(result.length);
+            return result[index];
+        }
         return result;
     }
 
@@ -105,6 +114,6 @@ export class BarkTopic {
 
     public addResponses(...responses: string[]): this {
 
-        return this.addExampleList(responses);
+        return this.addResponseList(responses);
     }
 }

@@ -28,25 +28,35 @@ BarkSocket.extend(app.http)
         const askAgeTopic: BarkTopic = BarkTopic.create('ask-age')
             .addExample(`What's your age`)
             .addExample(`How old are you`)
-            .addResponse(`I'm 0`);
-        const listTopic: BarkTopic = BarkTopic.create('ask-age')
+            .addResponses(`I'm 0`, 'Nothing to tell you');
+        const listTopic: BarkTopic = BarkTopic.create('list')
             .addExample(`Add to my list`)
             .addExample(`Things to do`)
-            .useExecutable((user: BarkUser, message: string) => {
-                return '';
+            .useExecutable((currentUser: BarkUser) => {
+                currentUser.setStatus('batch');
+                return [
+                    'Entered Batch Mode',
+                    'Here we goes',
+                ];
             });
 
-        shell.addTopic(greetingTopic).addTopic(askAgeTopic);
+        shell.addTopic(greetingTopic).addTopic(askAgeTopic).addTopic(listTopic);
         const bot: BarkBot = shell.generate();
 
         switch (user.status) {
             case 'initial': {
-                const topic: BarkTopic = bot.answer(message);
+                const topic: BarkTopic | null = bot.answer(message);
+                if (!topic) {
+                    return {
+                        type: RESPONSE_TYPE.TEXT,
+                        message: `I can't understand you`,
+                    };
+                }
                 const response: string = await topic.autoResponse(user, message);
 
                 return {
                     type: RESPONSE_TYPE.TEXT,
-                    message: `${user.username}, you said ${message}`,
+                    message: response,
                 };
             }
             case 'batch': {
@@ -62,6 +72,8 @@ BarkSocket.extend(app.http)
                 };
             }
         }
+
+        return null;
     })
     .declareUserGreetingFunction((user: BarkUser) => {
         return {
