@@ -38,6 +38,6 @@ export class BarkShell {
         }
 
         classifier.train();
-        return BarkBot.create(classifier);
+        return BarkBot.create(classifier, this._topics);
     }
 }

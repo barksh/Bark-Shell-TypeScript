@@ -35,17 +35,28 @@ describe('Given {BarkShell} Class - Simple Simulate', (): void => {
         bot = undefined as any;
     });
 
+    it('should be able to classify', (): void => {
+
+        const result: Record<string, number> = bot.classify('hello');
+
+        expect(Object.keys(result)).to.be.lengthOf(2);
+    });
+
     it('should be able to answer question - greeting', (): void => {
 
-        const answer: string = bot.classify('hi');
+        const answer: BarkTopic | null = bot.answer('hi');
 
-        expect(answer).to.be.equal(firstName);
+        // tslint:disable-next-line: no-unused-expression
+        expect(answer).to.be.exist;
+        expect(answer?.name).to.be.equal(firstName);
     });
 
     it('should be able to answer question - age', (): void => {
 
-        const answer: string = bot.classify('How old are you?');
+        const answer: BarkTopic | null = bot.answer('How old are you?');
 
-        expect(answer).to.be.equal(secondName);
+        // tslint:disable-next-line: no-unused-expression
+        expect(answer).to.be.exist;
+        expect(answer?.name).to.be.equal(secondName);
     });
 });
