@@ -22,6 +22,9 @@ dist
 temp
 app
 
+# mac
+.DS_Store
+
 # lock
 yarn.lock
 
