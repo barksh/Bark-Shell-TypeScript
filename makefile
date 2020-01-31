@@ -9,11 +9,11 @@ mocha := node_modules/.bin/mocha
 
 .IGNORE: clean-linux
 
-main: dev
+main: simple-example
 
-dev:
-	@echo "[INFO] Building for development"
-	@NODE_ENV=development $(tsc) --p $(dev)
+simple-example:
+	@echo "[INFO] Running Example"
+	@NODE_ENV=development $(ts_node) --project $(dev) example/simple.ts
 
 build:
 	@echo "[INFO] Building for production"

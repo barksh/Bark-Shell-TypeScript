@@ -19,7 +19,7 @@
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
-    "@sudoo/express": "^2.0.2",
+    "@sudoo/express": "^2.1.1",
     "@sudoo/io": "^1.6.2",
     "@sudoo/triforce": "^2.1.0",
     "@types/socket.io": "^2.1.4"
