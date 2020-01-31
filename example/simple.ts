@@ -8,7 +8,7 @@ import { SudooExpress, SudooExpressApplication } from "@sudoo/express";
 import { TIME_IN_MILLISECONDS } from "@sudoo/magic";
 import { Request, Response } from "express";
 import * as Path from "path";
-import { BarkSocket, BarkUser, MiddleResponseExecuter, RESPONSE_TYPE, BarkShell, BarkTopic, BarkBot } from "../src";
+import { BarkBot, BarkShell, BarkSocket, BarkTopic, BarkUser, MiddleResponseExecuter, RESPONSE_TYPE } from "../src";
 
 const setting: SudooExpressApplication = SudooExpressApplication.create('Bark Shell - Example', "1.0.0");
 const app: SudooExpress = SudooExpress.create(setting);
