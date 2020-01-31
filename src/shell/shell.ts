@@ -1,6 +1,6 @@
 /**
  * @author WMXPY
- * @namespace Bark_Shell
+ * @namespace Bark_Shell_Shell
  * @description Shell
  */
 
