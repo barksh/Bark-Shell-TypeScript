@@ -6,9 +6,8 @@
 
 import * as HTTP from "http";
 import * as SocketIO from "socket.io";
-import { BarkShellResponse } from "../declare";
 import { BarkUser } from "../status/user";
-import { UserDisconnectFunction, UserGreetingFunction, UserInitiateFunction, UserMessageFunction } from "./declare";
+import { MiddleResponseExecuter, UserDisconnectFunction, UserFunctionResponse, UserGreetingFunction, UserInitiateFunction, UserMessageFunction } from "./declare";
 
 export class BarkSocket {
 
@@ -59,7 +58,7 @@ export class BarkSocket {
             const user: BarkUser<any> = await Promise.resolve(userInitiateFunction(socket.handshake.headers));
 
             if (this._userGreetingFunction) {
-                const response: BarkShellResponse | BarkShellResponse[] | null = await this._userGreetingFunction(user);
+                const response: UserFunctionResponse = await this._userGreetingFunction(user);
                 this._executeAction(socket, response);
             }
 
@@ -71,13 +70,21 @@ export class BarkSocket {
 
             socket.on('message', async (message: string) => {
                 const userMessageFunction: UserMessageFunction = this._assertUserMessageFunction();
-                const response: BarkShellResponse | BarkShellResponse[] | null = await Promise.resolve(userMessageFunction(user, message));
+                const executer: MiddleResponseExecuter = this._getExecuter(socket);
+                const response: UserFunctionResponse = await Promise.resolve(userMessageFunction(user, message, executer));
                 this._executeAction(socket, response);
             });
         });
     }
 
-    private _executeAction(socket: SocketIO.Socket, response: BarkShellResponse | BarkShellResponse[] | null) {
+    private _getExecuter(socket: SocketIO.Socket): MiddleResponseExecuter {
+
+        return (response: UserFunctionResponse): void => {
+            this._executeAction(socket, response);
+        };
+    }
+
+    private _executeAction(socket: SocketIO.Socket, response: UserFunctionResponse) {
 
         if (!response) {
             return;

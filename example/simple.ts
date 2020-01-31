@@ -7,7 +7,7 @@
 import { SudooExpress, SudooExpressApplication } from "@sudoo/express";
 import { Request, Response } from "express";
 import * as Path from "path";
-import { BarkSocket, BarkUser, RESPONSE_TYPE } from "../src";
+import { BarkSocket, BarkUser, MiddleResponseExecuter, RESPONSE_TYPE } from "../src";
 
 const setting: SudooExpressApplication = SudooExpressApplication.create('Bark Shell - Example', "1.0.0");
 const app: SudooExpress = SudooExpress.create(setting);
@@ -16,7 +16,14 @@ BarkSocket.extend(app.http)
     .declareUserInitiateFunction((headers) => {
         return BarkUser.create(headers.username, 'initial');
     })
-    .declareUserMessageFunction((user: BarkUser, message: string) => {
+    .declareUserMessageFunction(async (user: BarkUser, message: string, executer: MiddleResponseExecuter) => {
+        executer({
+            type: RESPONSE_TYPE.TEXT,
+            message: `Loading`,
+        });
+        // tslint:disable-next-line: no-magic-numbers
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        console.log('here');
         return {
             type: RESPONSE_TYPE.TEXT,
             message: `${user.username}, you said ${message}`,
