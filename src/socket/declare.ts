@@ -20,7 +20,7 @@ export type UserGreetingFunction = (user: BarkUser) => (
     UserFunctionResponse
     | Promise<UserFunctionResponse>
 );
-export type UserMessageFunction = (user: BarkUser, message: string, executer: MiddleResponseExecuter) => (
+export type StatusHandler = (user: BarkUser, message: string, executer: MiddleResponseExecuter) => (
     UserFunctionResponse
     | Promise<UserFunctionResponse>
 );

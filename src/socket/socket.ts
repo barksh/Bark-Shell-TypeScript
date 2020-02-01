@@ -7,7 +7,7 @@
 import * as HTTP from "http";
 import * as SocketIO from "socket.io";
 import { BarkUser } from "../status/user";
-import { MiddleResponseExecuter, UserDisconnectFunction, UserFunctionResponse, UserGreetingFunction, UserInitiateFunction, UserMessageFunction } from "./declare";
+import { MiddleResponseExecuter, StatusHandler, UserDisconnectFunction, UserFunctionResponse, UserGreetingFunction, UserInitiateFunction } from "./declare";
 
 export class BarkSocket {
 
@@ -21,15 +21,24 @@ export class BarkSocket {
     private _userInitiateFunction: UserInitiateFunction | null;
     private _userDisconnectFunction: UserDisconnectFunction | null;
     private _userGreetingFunction: UserGreetingFunction | null;
-    private _userMessageFunction: UserMessageFunction | null;
+
+    private _defaultStatusHandler: StatusHandler | null;
+    private readonly _statusHandlers: Map<string, StatusHandler>;
 
     private constructor() {
 
         this._io = null;
+
         this._userInitiateFunction = null;
         this._userDisconnectFunction = null;
         this._userGreetingFunction = null;
-        this._userMessageFunction = null;
+
+        this._defaultStatusHandler = null;
+        this._statusHandlers = new Map();
+    }
+
+    public get statusHandlers(): Map<string, StatusHandler> {
+        return this._statusHandlers;
     }
 
     public declareUserInitiateFunction(func: UserInitiateFunction): this {
@@ -44,8 +53,14 @@ export class BarkSocket {
         this._userGreetingFunction = func;
         return this;
     }
-    public declareUserMessageFunction(func: UserMessageFunction): this {
-        this._userMessageFunction = func;
+    public declareDefaultStatusHandler(func: StatusHandler): this {
+        this._defaultStatusHandler = func;
+        return this;
+    }
+
+    public declareStatusHandler(status: string, func: StatusHandler): this {
+
+        this._statusHandlers.set(status, func);
         return this;
     }
 
@@ -69,9 +84,12 @@ export class BarkSocket {
             });
 
             socket.on('message', async (message: string) => {
-                const userMessageFunction: UserMessageFunction = this._assertUserMessageFunction();
+
+                const statusHandler: StatusHandler = this._getUserMessageFunction(user.status);
                 const executer: MiddleResponseExecuter = this._getExecuter(socket);
-                const response: UserFunctionResponse = await Promise.resolve(userMessageFunction(user, message, executer));
+
+                const response: UserFunctionResponse = await Promise.resolve(statusHandler(user, message, executer));
+
                 this._executeAction(socket, response);
             });
         });
@@ -106,10 +124,13 @@ export class BarkSocket {
         throw new Error('[BARK-SHELL] User initiate function is required');
     }
 
-    private _assertUserMessageFunction(): UserMessageFunction {
+    private _getUserMessageFunction(status: string): StatusHandler {
 
-        if (this._userMessageFunction) {
-            return this._userMessageFunction;
+        if (this._statusHandlers.has(status)) {
+            return this._statusHandlers.get(status) as StatusHandler;
+        }
+        if (this._defaultStatusHandler) {
+            return this._defaultStatusHandler;
         }
         throw new Error('[BARK-SHELL] User message function is required');
     }
