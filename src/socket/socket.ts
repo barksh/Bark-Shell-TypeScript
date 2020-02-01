@@ -64,9 +64,17 @@ export class BarkSocket {
         return this;
     }
 
-    public extend(server: HTTP.Server) {
+    public extend(server: HTTP.Server, path: string, origins?: string) {
 
-        this._io = SocketIO(server);
+        this._io = SocketIO(server, {
+
+            path,
+            serveClient: false,
+            origins,
+
+            cookie: false,
+        });
+
         this._io.on('connection', async (socket: SocketIO.Socket) => {
 
             const userInitiateFunction: UserInitiateFunction = this._assertUserInitiateFunction();
