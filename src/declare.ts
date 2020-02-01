@@ -4,7 +4,7 @@
  * @description Declare
  */
 
-export enum RESPONSE_TYPE {
+export enum ATTACHMENT_TYPE {
 
     TEXT = "TEXT",
 }
@@ -18,7 +18,7 @@ export type BarkShellSuggestion = {
 
 export type BarkShellAttachment = {
 
-    readonly type: RESPONSE_TYPE.TEXT;
+    readonly type: ATTACHMENT_TYPE.TEXT;
     readonly message: string;
 };
 
