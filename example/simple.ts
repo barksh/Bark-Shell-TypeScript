@@ -8,7 +8,7 @@ import { SudooExpress, SudooExpressApplication } from "@sudoo/express";
 import { TIME_IN_MILLISECONDS } from "@sudoo/magic";
 import { Request, Response } from "express";
 import * as Path from "path";
-import { BarkBot, BarkShell, BarkSocket, BarkTopic, BarkUser, MiddleResponseExecuter, RESPONSE_TYPE } from "../src";
+import { BarkBot, BarkShell, BarkShellResponse, BarkSocket, BarkTopic, BarkUser, MiddleResponseExecuter, UserFunctionResponse } from "../src";
 
 const setting: SudooExpressApplication = SudooExpressApplication.create('Bark Shell - Example', "1.0.0");
 const app: SudooExpress = SudooExpress.create(setting);
@@ -17,7 +17,7 @@ BarkSocket.create()
     .declareUserInitiateFunction((headers) => {
         return BarkUser.create(headers.username, 'initial');
     })
-    .declareUserMessageFunction(async (user: BarkUser, message: string, executer: MiddleResponseExecuter) => {
+    .declareUserMessageFunction(async (user: BarkUser, message: string, executer: MiddleResponseExecuter): Promise<UserFunctionResponse> => {
 
         const shell: BarkShell = BarkShell.create();
 
@@ -48,26 +48,17 @@ BarkSocket.create()
                 const topic: BarkTopic | null = bot.answer(message);
                 if (!topic) {
                     return {
-                        type: RESPONSE_TYPE.TEXT,
                         message: `I can't understand you`,
                     };
                 }
-                const response: string = await topic.autoResponse(user, message);
-
-                return {
-                    type: RESPONSE_TYPE.TEXT,
-                    message: response,
-                };
+                const response: BarkShellResponse = await topic.autoResponse(user, message);
+                return response;
             }
             case 'batch': {
 
-                executer({
-                    type: RESPONSE_TYPE.TEXT,
-                    message: `Adding ${message} to your list`,
-                });
+                executer({ message: `Adding ${message} to your list` });
                 await new Promise((resolve) => setTimeout(resolve, TIME_IN_MILLISECONDS.SECOND));
                 return {
-                    type: RESPONSE_TYPE.TEXT,
                     message: `${message}, added`,
                 };
             }
@@ -77,7 +68,6 @@ BarkSocket.create()
     })
     .declareUserGreetingFunction((user: BarkUser) => {
         return {
-            type: RESPONSE_TYPE.TEXT,
             message: `Hello ${user.username}`,
         };
     })

@@ -4,11 +4,15 @@
  * @description Declare
  */
 
+import { BarkShellResponse } from "../declare";
 import { BarkUser } from "../status/user";
 
-export type TopicExecutable = (user: BarkUser, message: string) => (
+export type TopicResponse =
     string
-    | string[]
-    | Promise<string>
-    | Promise<string[]>
+    | BarkShellResponse
+    | Array<BarkShellResponse | string>;
+
+export type TopicExecutable = (user: BarkUser, message: string) => (
+    TopicResponse
+    | Promise<TopicResponse>
 );

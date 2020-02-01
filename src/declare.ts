@@ -12,16 +12,19 @@ export enum RESPONSE_TYPE {
 export type BarkShellSuggestion = {
 
     readonly label: string;
+    readonly value: string;
     readonly description?: string;
 };
 
-export type BarkShellResponse = BarkShellResponseDynamic & {
-
-    readonly suggestions?: BarkShellSuggestion[];
-};
-
-export type BarkShellResponseDynamic = {
+export type BarkShellAttachment = {
 
     readonly type: RESPONSE_TYPE.TEXT;
     readonly message: string;
+};
+
+export type BarkShellResponse = {
+
+    readonly message: string;
+    readonly attachments?: BarkShellAttachment[];
+    readonly suggestions?: BarkShellSuggestion[];
 };

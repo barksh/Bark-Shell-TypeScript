@@ -5,8 +5,9 @@
  */
 
 import { randomIntegerBelow } from "@sudoo/random";
+import { BarkShellResponse } from "../declare";
 import { BarkUser } from "../status/user";
-import { TopicExecutable } from "./declare";
+import { TopicExecutable, TopicResponse } from "./declare";
 
 export class BarkTopic {
 
@@ -17,7 +18,7 @@ export class BarkTopic {
 
     private readonly _topicName: string;
     private readonly _examples: string[];
-    private readonly _responses: string[];
+    private readonly _responses: BarkShellResponse[];
 
     private _executable: TopicExecutable | null;
 
@@ -36,11 +37,11 @@ export class BarkTopic {
     public get examples(): string[] {
         return this._examples;
     }
-    public get responses(): string[] {
+    public get responses(): BarkShellResponse[] {
         return this._responses;
     }
 
-    public async autoResponse(user: BarkUser, message: string): Promise<string> {
+    public async autoResponse(user: BarkUser, message: string): Promise<BarkShellResponse> {
 
         if (this._executable) {
             return await this.execute(user, message);
@@ -49,13 +50,13 @@ export class BarkTopic {
         return this.pickResponse();
     }
 
-    public async execute(user: BarkUser, message: string): Promise<string> {
+    public async execute(user: BarkUser, message: string): Promise<BarkShellResponse> {
 
         if (!this._executable) {
             throw new Error('[BARK-SHELL] Executable Required');
         }
 
-        const result: string | string[] = await Promise.resolve(this._executable(user, message));
+        const result: TopicResponse = await Promise.resolve(this._executable(user, message));
 
         if (Array.isArray(result)) {
 
@@ -63,9 +64,9 @@ export class BarkTopic {
                 throw new Error('[BARK-SHELL] At least one response required - Executable');
             }
             const index: number = randomIntegerBelow(result.length);
-            return result[index];
+            return this._convertString(result[index]);
         }
-        return result;
+        return this._convertString(result);
     }
 
     public useExecutable(executable: TopicExecutable): this {
@@ -74,7 +75,7 @@ export class BarkTopic {
         return this;
     }
 
-    public pickResponse(): string {
+    public pickResponse(): BarkShellResponse {
 
         if (this._responses.length === 0) {
             throw new Error('[BARK-SHELL] At least one response required');
@@ -100,20 +101,33 @@ export class BarkTopic {
         return this.addExampleList(examples);
     }
 
-    public addResponse(response: string): this {
+    public addResponse(response: BarkShellResponse | string): this {
 
-        this._responses.push(response);
+        this._responses.push(this._convertString(response));
         return this;
     }
 
-    public addResponseList(responses: string[]): this {
+    public addResponseList(responses: Array<BarkShellResponse | string>): this {
 
-        this._responses.push(...responses);
+        for (const response of responses) {
+            this.addResponse(response);
+        }
         return this;
     }
 
-    public addResponses(...responses: string[]): this {
+    public addResponses(...responses: Array<BarkShellResponse | string>): this {
 
         return this.addResponseList(responses);
+    }
+
+    private _convertString(target: string | BarkShellResponse): BarkShellResponse {
+
+        if (typeof target === 'string') {
+            return {
+                message: target,
+            };
+        }
+
+        return target;
     }
 }
