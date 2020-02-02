@@ -93,7 +93,7 @@ export class BarkSocket {
 
             socket.on('message', async (message: string) => {
 
-                const statusHandler: StatusHandler = this._getUserMessageFunction(user.status);
+                const statusHandler: StatusHandler = this._getUserMessageFunction(user.currentStatus);
                 const executer: MiddleResponseExecuter = this._getExecuter(socket);
 
                 const response: UserFunctionResponse = await Promise.resolve(statusHandler(user, message, executer));
@@ -132,7 +132,14 @@ export class BarkSocket {
         throw new Error('[BARK-SHELL] User initiate function is required');
     }
 
-    private _getUserMessageFunction(status: string): StatusHandler {
+    private _getUserMessageFunction(status: string | undefined): StatusHandler {
+
+        if (!status) {
+            if (this._defaultStatusHandler) {
+                return this._defaultStatusHandler;
+            }
+            throw new Error('[BARK-SHELL] User message function is required');
+        }
 
         if (this._statusHandlers.has(status)) {
             return this._statusHandlers.get(status) as StatusHandler;

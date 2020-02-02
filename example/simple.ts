@@ -27,7 +27,7 @@ const listTopic: BarkTopic = BarkTopic.create('list')
     .addExample(`Add to my list`)
     .addExample(`Things to do`)
     .useExecutable((currentUser: BarkUser) => {
-        currentUser.setStatus('batch');
+        currentUser.pushStatus('batch');
         return [
             'Entered Batch Mode',
             'Here we goes',
@@ -71,3 +71,4 @@ app.express.get('/', (req: Request, res: Response) => {
 
 // tslint:disable-next-line: no-magic-numbers
 app.host(3000);
+console.log('123');

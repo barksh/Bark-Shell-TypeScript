@@ -4,9 +4,9 @@
  * @description User
  */
 
-export class BarkUser<T extends any = string> {
+export class BarkUser<T extends string = string> {
 
-    public static create<T extends any = string>(username: string, initialStatus?: T): BarkUser<T> {
+    public static create<T extends string = string>(username: string, initialStatus?: T): BarkUser<T> {
 
         return new BarkUser<T>(username, initialStatus);
     }
