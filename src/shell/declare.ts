@@ -5,14 +5,14 @@
  */
 
 import { BarkShellResponse } from "../declare";
-import { BarkUser } from "../status/user";
+import { BarkSession } from "../session/session";
 
 export type TopicResponse =
     string
     | BarkShellResponse
     | Array<BarkShellResponse | string>;
 
-export type TopicExecutable = (user: BarkUser, message: string) => (
+export type TopicExecutable = (user: BarkSession, message: string) => (
     TopicResponse
     | Promise<TopicResponse>
 );

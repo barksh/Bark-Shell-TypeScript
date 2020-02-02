@@ -6,7 +6,7 @@
 
 import * as HTTP from "http";
 import * as SocketIO from "socket.io";
-import { BarkUser } from "../status/user";
+import { BarkSession } from "../session/session";
 import { MiddleResponseExecuter, StatusHandler, UserDisconnectFunction, UserFunctionResponse, UserGreetingFunction, UserInitiateFunction } from "./declare";
 
 export class BarkSocket {
@@ -78,7 +78,7 @@ export class BarkSocket {
         this._io.on('connection', async (socket: SocketIO.Socket) => {
 
             const userInitiateFunction: UserInitiateFunction = this._assertUserInitiateFunction();
-            const user: BarkUser<any> = await Promise.resolve(userInitiateFunction(socket.handshake.headers));
+            const user: BarkSession<any> = await Promise.resolve(userInitiateFunction(socket.handshake.headers));
 
             if (this._userGreetingFunction) {
                 const response: UserFunctionResponse = await this._userGreetingFunction(user);

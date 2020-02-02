@@ -6,7 +6,7 @@
 
 import { randomIntegerBelow } from "@sudoo/random";
 import { BarkShellResponse } from "../declare";
-import { BarkUser } from "../status/user";
+import { BarkSession } from "../session/session";
 import { TopicExecutable, TopicResponse } from "./declare";
 
 export class BarkTopic {
@@ -41,7 +41,7 @@ export class BarkTopic {
         return this._responses;
     }
 
-    public async autoResponse(user: BarkUser, message: string): Promise<BarkShellResponse> {
+    public async autoResponse(user: BarkSession, message: string): Promise<BarkShellResponse> {
 
         if (this._executable) {
             return await this.execute(user, message);
@@ -50,7 +50,7 @@ export class BarkTopic {
         return this.pickResponse();
     }
 
-    public async execute(user: BarkUser, message: string): Promise<BarkShellResponse> {
+    public async execute(user: BarkSession, message: string): Promise<BarkShellResponse> {
 
         if (!this._executable) {
             throw new Error('[BARK-SHELL] Executable Required');

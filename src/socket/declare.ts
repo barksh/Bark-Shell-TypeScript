@@ -5,7 +5,7 @@
  */
 
 import { BarkShellResponse } from "../declare";
-import { BarkUser } from "../status/user";
+import { BarkSession } from "../session/session";
 
 export type UserFunctionResponse =
     BarkShellResponse
@@ -14,13 +14,13 @@ export type UserFunctionResponse =
 
 export type MiddleResponseExecuter = (response: UserFunctionResponse) => void;
 
-export type UserInitiateFunction = (headers: Record<string, string>) => (BarkUser | Promise<BarkUser>);
-export type UserDisconnectFunction = (user: BarkUser) => (void | Promise<void>);
-export type UserGreetingFunction = (user: BarkUser) => (
+export type UserInitiateFunction = (headers: Record<string, string>) => (BarkSession | Promise<BarkSession>);
+export type UserDisconnectFunction = (user: BarkSession) => (void | Promise<void>);
+export type UserGreetingFunction = (user: BarkSession) => (
     UserFunctionResponse
     | Promise<UserFunctionResponse>
 );
-export type StatusHandler = (user: BarkUser, message: string, executer: MiddleResponseExecuter) => (
+export type StatusHandler = (user: BarkSession, message: string, executer: MiddleResponseExecuter) => (
     UserFunctionResponse
     | Promise<UserFunctionResponse>
 );

@@ -1,33 +1,33 @@
 /**
  * @author WMXPY
- * @namespace Bark_Shell_Status
- * @description User
+ * @namespace Bark_Shell_Session
+ * @description Session
  */
 
-export class BarkUser<A extends any = string, S extends string = string> {
+export class BarkSession<A extends any = string, S extends string = string> {
 
     public static create<A extends any = string, S extends string = string>(
         authorization: A,
         initialStatus?: S,
-    ): BarkUser<A, S> {
+    ): BarkSession<A, S> {
 
         const statusStack: S[] = initialStatus ? [initialStatus] : [];
         const context: Map<string, any> = new Map();
-        return new BarkUser<A, S>(authorization, statusStack, context);
+        return new BarkSession<A, S>(authorization, statusStack, context);
     }
 
     public static restore<A extends any = string, S extends string = string>(
         authorization: A,
         statusStack: S[],
         context: Record<string, any>,
-    ): BarkUser<A, S> {
+    ): BarkSession<A, S> {
 
         const contextMap: Map<string, any> = new Map();
         const keys: string[] = Object.keys(context);
         for (const key of keys) {
             contextMap.set(key, context[key]);
         }
-        return new BarkUser<A, S>(authorization, statusStack, contextMap);
+        return new BarkSession<A, S>(authorization, statusStack, contextMap);
     }
 
     private readonly _authorization: A;
