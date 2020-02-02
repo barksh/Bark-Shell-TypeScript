@@ -27,6 +27,9 @@ export class BarkUser<T extends any = string> {
     public get length(): number {
         return this._statusStack.length;
     }
+    public get isEmptyStatus(): boolean {
+        return this._statusStack.length === 0;
+    }
     public get currentStatus(): T | undefined {
         return this._statusStack[0];
     }
