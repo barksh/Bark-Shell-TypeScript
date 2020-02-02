@@ -83,8 +83,6 @@ export class BarkSocket {
 
         this._io.on('connection', async (socket: SocketIO.Socket) => {
 
-            console.log(Object.keys(this._io?.clients().sockets as any).length);
-
             const userInitiateFunction: UserInitiateFunction = this._assertUserInitiateFunction();
             const user: BarkSession<any> | null = await Promise.resolve(userInitiateFunction(socket.handshake.headers));
 
@@ -123,6 +121,29 @@ export class BarkSocket {
 
         if (this._io) {
             return this._io.clients();
+        }
+        return null;
+    }
+
+    public getSocketKeys(): string[] {
+
+        const clients: SocketIO.Namespace | null = this.getClients();
+        if (clients) {
+            return Object.keys(clients.sockets);
+        }
+        return [];
+    }
+
+    public getSocketCount(): number {
+
+        return this.getSocketKeys().length;
+    }
+
+    public getSocket(key: string): SocketIO.Socket | null {
+
+        const clients: SocketIO.Namespace | null = this.getClients();
+        if (clients) {
+            return clients.sockets[key];
         }
         return null;
     }
