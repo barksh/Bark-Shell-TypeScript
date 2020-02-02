@@ -6,14 +6,21 @@
 
 export class BarkUser<A extends any = string, S extends string = string> {
 
-    public static create<A extends any = string, S extends string = string>(authorization: A, initialStatus?: S): BarkUser<A, S> {
+    public static create<A extends any = string, S extends string = string>(
+        authorization: A,
+        initialStatus?: S,
+    ): BarkUser<A, S> {
 
         const statusStack: S[] = initialStatus ? [initialStatus] : [];
         const context: Map<string, any> = new Map();
         return new BarkUser<A, S>(authorization, statusStack, context);
     }
 
-    public static restore<A extends any = string, S extends string = string>(authorization: A, statusStack: S[], context: Record<string, any>): BarkUser<A, S> {
+    public static restore<A extends any = string, S extends string = string>(
+        authorization: A,
+        statusStack: S[],
+        context: Record<string, any>,
+    ): BarkUser<A, S> {
 
         const contextMap: Map<string, any> = new Map();
         const keys: string[] = Object.keys(context);
@@ -61,5 +68,44 @@ export class BarkUser<A extends any = string, S extends string = string> {
 
         const currentStatus: S | undefined = this.statusStack.shift();
         return currentStatus;
+    }
+
+    public getContexts(): Record<string, any> {
+
+        const result: Record<string, any> = {};
+        const keys: Iterable<string> = this._context.keys();
+
+        for (const key of keys) {
+            result[key] = this._context.get(key) as any;
+        }
+
+        return result;
+    }
+
+    public getContext(key: string): any {
+
+        return this._context.get(key);
+    }
+
+    public setContext(key: string, value: string): this {
+
+        this._context.set(key, value);
+        return this;
+    }
+
+    public replaceContext(newContext: Record<string, any>): this {
+
+        this._context.clear();
+        const keys: string[] = Object.keys(newContext);
+        for (const key of keys) {
+            this._context.set(key, newContext[key]);
+        }
+        return this;
+    }
+
+    public clearContext(): this {
+
+        this._context.clear();
+        return this;
     }
 }
