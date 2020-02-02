@@ -60,7 +60,7 @@ BarkSocket.create()
     })
     .declareUserGreetingFunction((user: BarkUser) => {
         return {
-            message: `Hello ${user.username}`,
+            message: `Hello ${user.authorization}`,
         };
     })
     .extend(app.http, '/hello');
