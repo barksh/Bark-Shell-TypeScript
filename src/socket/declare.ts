@@ -21,6 +21,7 @@ export type UserInitiateFunction = (headers: Record<string, string>) => (
     | Promise<null>
 );
 
+export type UserRejectedFunction = (headers: Record<string, string>) => (void | Promise<void>);
 export type UserDisconnectFunction = (user: BarkSession) => (void | Promise<void>);
 export type UserGreetingFunction = (user: BarkSession) => (
     UserFunctionResponse

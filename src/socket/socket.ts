@@ -7,7 +7,7 @@
 import * as HTTP from "http";
 import * as SocketIO from "socket.io";
 import { BarkSession } from "../session/session";
-import { MiddleResponseExecuter, StatusHandler, UserDisconnectFunction, UserFunctionResponse, UserGreetingFunction, UserInitiateFunction } from "./declare";
+import { MiddleResponseExecuter, StatusHandler, UserDisconnectFunction, UserFunctionResponse, UserGreetingFunction, UserInitiateFunction, UserRejectedFunction } from "./declare";
 
 export class BarkSocket {
 
@@ -19,6 +19,7 @@ export class BarkSocket {
     private _io: SocketIO.Server | null;
 
     private _userInitiateFunction: UserInitiateFunction | null;
+    private _userRejectedFunction: UserRejectedFunction | null;
     private _userDisconnectFunction: UserDisconnectFunction | null;
     private _userGreetingFunction: UserGreetingFunction | null;
 
@@ -30,6 +31,7 @@ export class BarkSocket {
         this._io = null;
 
         this._userInitiateFunction = null;
+        this._userRejectedFunction = null;
         this._userDisconnectFunction = null;
         this._userGreetingFunction = null;
 
@@ -43,6 +45,10 @@ export class BarkSocket {
 
     public declareUserInitiateFunction(func: UserInitiateFunction): this {
         this._userInitiateFunction = func;
+        return this;
+    }
+    public declareUserRejectedFunction(func: UserRejectedFunction): this {
+        this._userRejectedFunction = func;
         return this;
     }
     public declareUserDisconnectFunction(func: UserDisconnectFunction): this {
@@ -84,7 +90,9 @@ export class BarkSocket {
 
             if (!user) {
                 socket.disconnect();
-                console.log(Object.keys(this._io?.clients().sockets as any).length);
+                if (this._userRejectedFunction) {
+                    this._userRejectedFunction(socket.handshake.headers);
+                }
                 return;
             }
 
