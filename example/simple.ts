@@ -39,6 +39,7 @@ const bot: BarkBot = shell.generate();
 
 BarkSocket.create()
     .declareUserInitiateFunction((headers) => {
+        console.log('hello');
         return BarkSession.create(headers.username, 'initial');
     })
     .declareStatusHandler('initial', async (user: BarkSession, message: string) => {
@@ -64,6 +65,35 @@ BarkSocket.create()
         };
     })
     .extend(app.http, '/hello');
+
+BarkSocket.create()
+    .declareUserInitiateFunction((headers) => {
+        console.log('world');
+        return BarkSession.create(headers.username, 'initial');
+    })
+    .declareStatusHandler('initial', async (user: BarkSession, message: string) => {
+        const topic: BarkTopic | null = bot.answer(message);
+        if (!topic) {
+            return {
+                message: `I can't understand you`,
+            };
+        }
+        const response: BarkShellResponse = await topic.autoResponse(user, message);
+        return response;
+    })
+    .declareStatusHandler('batch', async (_: BarkSession, message: string, executer: MiddleResponseExecuter) => {
+        executer({ message: `Adding ${message} to your list` });
+        await new Promise((resolve) => setTimeout(resolve, TIME_IN_MILLISECONDS.SECOND));
+        return {
+            message: `${message}, added`,
+        };
+    })
+    .declareUserGreetingFunction((user: BarkSession) => {
+        return {
+            message: `Hello ${user.authorization}`,
+        };
+    })
+    .extend(app.http, '/world');
 
 app.express.get('/', (req: Request, res: Response) => {
     res.sendFile(Path.join(__dirname, '..', 'public', 'index.html'));
