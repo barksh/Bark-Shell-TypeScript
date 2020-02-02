@@ -103,6 +103,14 @@ export class BarkSocket {
         });
     }
 
+    public getClients(): SocketIO.Namespace | null {
+
+        if (this._io) {
+            return this._io.clients();
+        }
+        return null;
+    }
+
     private _getExecuter(socket: SocketIO.Socket): MiddleResponseExecuter {
 
         return (response: UserFunctionResponse): void => {
