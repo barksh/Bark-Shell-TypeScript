@@ -77,8 +77,16 @@ export class BarkSocket {
 
         this._io.on('connection', async (socket: SocketIO.Socket) => {
 
+            console.log(Object.keys(this._io?.clients().sockets as any).length);
+
             const userInitiateFunction: UserInitiateFunction = this._assertUserInitiateFunction();
-            const user: BarkSession<any> = await Promise.resolve(userInitiateFunction(socket.handshake.headers));
+            const user: BarkSession<any> | null = await Promise.resolve(userInitiateFunction(socket.handshake.headers));
+
+            if (!user) {
+                socket.disconnect();
+                console.log(Object.keys(this._io?.clients().sockets as any).length);
+                return;
+            }
 
             if (this._userGreetingFunction) {
                 const response: UserFunctionResponse = await this._userGreetingFunction(user);

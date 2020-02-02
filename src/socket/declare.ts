@@ -14,7 +14,13 @@ export type UserFunctionResponse =
 
 export type MiddleResponseExecuter = (response: UserFunctionResponse) => void;
 
-export type UserInitiateFunction = (headers: Record<string, string>) => (BarkSession | Promise<BarkSession>);
+export type UserInitiateFunction = (headers: Record<string, string>) => (
+    BarkSession
+    | Promise<BarkSession>
+    | null
+    | Promise<null>
+);
+
 export type UserDisconnectFunction = (user: BarkSession) => (void | Promise<void>);
 export type UserGreetingFunction = (user: BarkSession) => (
     UserFunctionResponse

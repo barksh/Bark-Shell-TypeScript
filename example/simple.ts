@@ -40,7 +40,7 @@ const bot: BarkBot = shell.generate();
 BarkSocket.create()
     .declareUserInitiateFunction((headers) => {
         console.log('hello');
-        return BarkSession.create(headers.username, 'initial');
+        return null;
     })
     .declareStatusHandler('initial', async (user: BarkSession, message: string) => {
         const topic: BarkTopic | null = bot.answer(message);
