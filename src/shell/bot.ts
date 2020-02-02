@@ -9,13 +9,24 @@ import { BarkTopic } from "./topic";
 
 export class BarkBot {
 
-    public static create(classifier: BayesClassifier, topics: BarkTopic[]) {
+    public static create(classifier: BayesClassifier, topics: BarkTopic[]): BarkBot {
 
         const topicMap: Map<string, BarkTopic> = new Map();
         for (const topic of topics) {
             topicMap.set(topic.name, topic);
         }
 
+        return new BarkBot(classifier, topicMap);
+    }
+
+    public static restore(rawData: string, topics: BarkTopic[]): BarkBot {
+
+        const topicMap: Map<string, BarkTopic> = new Map();
+        for (const topic of topics) {
+            topicMap.set(topic.name, topic);
+        }
+
+        const classifier: BayesClassifier = BayesClassifier.restore(JSON.parse(rawData));
         return new BarkBot(classifier, topicMap);
     }
 
@@ -26,6 +37,11 @@ export class BarkBot {
 
         this._classifier = classifier;
         this._topicMap = topicMap;
+    }
+
+    public exportRaw(): string {
+
+        return JSON.stringify(this._classifier);
     }
 
     public answer(question: string): BarkTopic | null {
