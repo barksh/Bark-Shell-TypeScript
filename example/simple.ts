@@ -71,4 +71,3 @@ app.express.get('/', (req: Request, res: Response) => {
 
 // tslint:disable-next-line: no-magic-numbers
 app.host(3000);
-console.log('123');
