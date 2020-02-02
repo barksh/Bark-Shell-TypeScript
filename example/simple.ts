@@ -63,7 +63,7 @@ BarkSocket.create()
             message: `Hello ${user.username}`,
         };
     })
-    .extend(app.http, '/');
+    .extend(app.http, '/hello');
 
 app.express.get('/', (req: Request, res: Response) => {
     res.sendFile(Path.join(__dirname, '..', 'public', 'index.html'));
