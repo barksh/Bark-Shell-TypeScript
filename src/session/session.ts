@@ -32,8 +32,8 @@ export class BarkSession<A extends any = string, S extends string = string> {
 
     private readonly _authorization: A;
 
-    private readonly _statusStack: S[];
-    private readonly _context: Map<string, any>;
+    private _statusStack: S[];
+    private _context: Map<string, any>;
 
     private constructor(authorization: A, statusStack: S[], context: Map<string, any>) {
 
@@ -70,6 +70,18 @@ export class BarkSession<A extends any = string, S extends string = string> {
         return currentStatus;
     }
 
+    public replaceStatus(status: S): this {
+
+        this._statusStack[0] = status;
+        return this;
+    }
+
+    public replaceStatusStuck(status: S[]): this {
+
+        this._statusStack = status;
+        return this;
+    }
+
     public getContexts(): Record<string, any> {
 
         const result: Record<string, any> = {};
@@ -100,6 +112,12 @@ export class BarkSession<A extends any = string, S extends string = string> {
         for (const key of keys) {
             this._context.set(key, newContext[key]);
         }
+        return this;
+    }
+
+    public replaceContextMap(newContextMap: Map<string, any>): this {
+
+        this._context = newContextMap;
         return this;
     }
 
