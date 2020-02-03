@@ -4,6 +4,7 @@
  * @description Socket
  */
 
+import { HTTP_RESPONSE_CODE } from "@sudoo/magic";
 import * as HTTP from "http";
 import * as SocketIO from "socket.io";
 import { PAYLOAD_TYPE } from "../declare";
@@ -25,6 +26,7 @@ export class BarkSocket {
     private _sessionGreetingFunction: SessionGreetingFunction | null;
 
     private _defaultStatusHandler: StatusHandler | null;
+    private readonly _allowOrigins: string[];
     private readonly _statusHandlers: Map<string, StatusHandler>;
 
     private constructor() {
@@ -37,6 +39,7 @@ export class BarkSocket {
         this._sessionGreetingFunction = null;
 
         this._defaultStatusHandler = null;
+        this._allowOrigins = [];
         this._statusHandlers = new Map();
     }
 
@@ -71,13 +74,26 @@ export class BarkSocket {
         return this;
     }
 
-    public extend(server: HTTP.Server, path: string, origins?: string) {
+    public allowOrigin(origin: string): this {
+
+        this._allowOrigins.push(origin);
+        return this;
+    }
+
+    public allowOrigins(...origins: string[]): this {
+
+        this._allowOrigins.push(...origins);
+        return this;
+    }
+
+    public extend(server: HTTP.Server, path: string) {
 
         this._io = SocketIO(server, {
 
             path,
             serveClient: false,
-            origins,
+            handlePreflightRequest: this._buildPreflightRequestHandler(),
+            origins: this._allowOrigins.length > 0 ? this._allowOrigins.join(' ') : undefined,
 
             cookie: false,
         });
@@ -148,6 +164,23 @@ export class BarkSocket {
             return clients.sockets[key];
         }
         return null;
+    }
+
+    private _buildPreflightRequestHandler(): any {
+
+        if (this._allowOrigins.length <= 0) {
+            return undefined;
+        }
+
+        return (req: any, res: any) => {
+            const headers = {
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                "Access-Control-Allow-Origin": req.headers.origin,
+                "Access-Control-Allow-Credentials": true,
+            };
+            res.writeHead(HTTP_RESPONSE_CODE.OK, headers);
+            res.end();
+        };
     }
 
     private _getExecuter(socket: SocketIO.Socket): MiddleResponseExecuter {

@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/barksh/Bark-Shell-TypeScript#readme",
   "dependencies": {
+    "@sudoo/magic": "^1.4.1",
     "@sudoo/random": "^2.1.0",
     "natural": "^0.6.3",
     "socket.io": "^2.3.0"
@@ -23,7 +24,6 @@
   "devDependencies": {
     "@sudoo/express": "^2.1.1",
     "@sudoo/io": "^1.6.2",
-    "@sudoo/magic": "^1.4.1",
     "@sudoo/triforce": "^2.1.0",
     "@types/express": "^4.17.2",
     "@types/natural": "^0.6.3",
