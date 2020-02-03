@@ -6,6 +6,7 @@
 
 import * as HTTP from "http";
 import * as SocketIO from "socket.io";
+import { PAYLOAD_TYPE } from "../declare";
 import { BarkSession } from "../session/session";
 import { MiddleResponseExecuter, SessionDisconnectFunction, SessionFunctionResponse, SessionGreetingFunction, SessionInitiateFunction, SessionRejectedFunction, StatusHandler } from "./declare";
 
@@ -87,6 +88,7 @@ export class BarkSocket {
             const session: BarkSession<any> | null = await Promise.resolve(sessionInitiateFunction(socket.handshake.headers));
 
             if (!session) {
+                socket.emit(PAYLOAD_TYPE.UNAUTHORIZED);
                 socket.disconnect();
                 if (this._sessionRejectedFunction) {
                     this._sessionRejectedFunction(socket.handshake.headers);
@@ -105,7 +107,7 @@ export class BarkSocket {
                 }
             });
 
-            socket.on('message', async (message: string) => {
+            socket.on(PAYLOAD_TYPE.MESSAGE, async (message: string) => {
 
                 const statusHandler: StatusHandler = this._getSessionMessageFunction(session.currentStatus);
                 const executer: MiddleResponseExecuter = this._getExecuter(socket);
@@ -162,10 +164,10 @@ export class BarkSocket {
         }
         if (Array.isArray(response)) {
             for (const each of response) {
-                socket.emit('message', each);
+                socket.emit(PAYLOAD_TYPE.MESSAGE, each);
             }
         } else {
-            socket.emit('message', response);
+            socket.emit(PAYLOAD_TYPE.MESSAGE, response);
         }
     }
 

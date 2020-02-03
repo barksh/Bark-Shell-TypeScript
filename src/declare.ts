@@ -7,6 +7,7 @@
 export enum PAYLOAD_TYPE {
 
     MESSAGE = "message",
+    UNAUTHORIZED = "unauthorized",
 }
 
 export enum ATTACHMENT_TYPE {
