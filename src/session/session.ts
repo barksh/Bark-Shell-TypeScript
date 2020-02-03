@@ -4,6 +4,8 @@
  * @description Session
  */
 
+import { randomUnique } from "@sudoo/random";
+
 export class BarkSession<A extends any = string, S extends string = string> {
 
     public static create<A extends any = string, S extends string = string>(
@@ -30,6 +32,7 @@ export class BarkSession<A extends any = string, S extends string = string> {
         return new BarkSession<A, S>(authorization, statusStack, contextMap);
     }
 
+    private readonly _identifier: string;
     private readonly _authorization: A;
 
     private _statusStack: S[];
@@ -37,11 +40,15 @@ export class BarkSession<A extends any = string, S extends string = string> {
 
     private constructor(authorization: A, statusStack: S[], context: Map<string, any>) {
 
+        this._identifier = randomUnique();
         this._authorization = authorization;
         this._statusStack = statusStack;
         this._context = context;
     }
 
+    public get identifier(): string {
+        return this._identifier;
+    }
     public get authorization(): A {
         return this._authorization;
     }

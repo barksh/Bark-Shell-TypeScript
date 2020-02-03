@@ -27,7 +27,8 @@ export class BarkSocket {
     private _sessionGreetingFunction: SessionGreetingFunction | null;
 
     private _defaultStatusHandler: StatusHandler | null;
-    private readonly _allowOrigins: string[];
+
+    private readonly _allowCrossOrigins: string[];
     private readonly _statusHandlers: Map<string, StatusHandler>;
 
     private constructor() {
@@ -40,7 +41,8 @@ export class BarkSocket {
         this._sessionGreetingFunction = null;
 
         this._defaultStatusHandler = null;
-        this._allowOrigins = [];
+
+        this._allowCrossOrigins = [];
         this._statusHandlers = new Map();
     }
 
@@ -75,15 +77,15 @@ export class BarkSocket {
         return this;
     }
 
-    public allowOrigin(origin: string): this {
+    public allowCrossOrigin(origin: string = '*:*'): this {
 
-        this._allowOrigins.push(origin);
+        this._allowCrossOrigins.push(origin);
         return this;
     }
 
-    public allowOrigins(...origins: string[]): this {
+    public allowCrossOrigins(...origins: string[]): this {
 
-        this._allowOrigins.push(...origins);
+        this._allowCrossOrigins.push(...origins);
         return this;
     }
 
@@ -95,7 +97,7 @@ export class BarkSocket {
             serveClient: false,
             handlePreflightRequest: this._buildPreflightRequestHandler(),
             transports: ['websocket', 'htmlfile', 'xhr-polling', 'jsonp-polling', 'polling'],
-            origins: this._allowOrigins.length > 0 ? this._allowOrigins.join(' ') : undefined,
+            origins: this._allowCrossOrigins.length > 0 ? this._allowCrossOrigins.join(' ') : undefined,
 
             cookie: false,
         });
@@ -171,7 +173,7 @@ export class BarkSocket {
 
     private _buildPreflightRequestHandler(): any {
 
-        if (this._allowOrigins.length <= 0) {
+        if (this._allowCrossOrigins.length <= 0) {
             return undefined;
         }
 
