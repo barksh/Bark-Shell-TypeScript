@@ -7,7 +7,7 @@
 import * as HTTP from "http";
 import * as SocketIO from "socket.io";
 import { BarkSession } from "../session/session";
-import { MiddleResponseExecuter, StatusHandler, UserDisconnectFunction, UserFunctionResponse, UserGreetingFunction, UserInitiateFunction, UserRejectedFunction } from "./declare";
+import { MiddleResponseExecuter, SessionDisconnectFunction, SessionFunctionResponse, SessionGreetingFunction, SessionInitiateFunction, SessionRejectedFunction, StatusHandler } from "./declare";
 
 export class BarkSocket {
 
@@ -18,10 +18,10 @@ export class BarkSocket {
 
     private _io: SocketIO.Server | null;
 
-    private _userInitiateFunction: UserInitiateFunction | null;
-    private _userRejectedFunction: UserRejectedFunction | null;
-    private _userDisconnectFunction: UserDisconnectFunction | null;
-    private _userGreetingFunction: UserGreetingFunction | null;
+    private _sessionInitiateFunction: SessionInitiateFunction | null;
+    private _sessionRejectedFunction: SessionRejectedFunction | null;
+    private _sessionDisconnectFunction: SessionDisconnectFunction | null;
+    private _sessionGreetingFunction: SessionGreetingFunction | null;
 
     private _defaultStatusHandler: StatusHandler | null;
     private readonly _statusHandlers: Map<string, StatusHandler>;
@@ -30,10 +30,10 @@ export class BarkSocket {
 
         this._io = null;
 
-        this._userInitiateFunction = null;
-        this._userRejectedFunction = null;
-        this._userDisconnectFunction = null;
-        this._userGreetingFunction = null;
+        this._sessionInitiateFunction = null;
+        this._sessionRejectedFunction = null;
+        this._sessionDisconnectFunction = null;
+        this._sessionGreetingFunction = null;
 
         this._defaultStatusHandler = null;
         this._statusHandlers = new Map();
@@ -43,20 +43,20 @@ export class BarkSocket {
         return this._statusHandlers;
     }
 
-    public declareUserInitiateFunction(func: UserInitiateFunction): this {
-        this._userInitiateFunction = func;
+    public declareSessionInitiateFunction(func: SessionInitiateFunction): this {
+        this._sessionInitiateFunction = func;
         return this;
     }
-    public declareUserRejectedFunction(func: UserRejectedFunction): this {
-        this._userRejectedFunction = func;
+    public declareSessionRejectedFunction(func: SessionRejectedFunction): this {
+        this._sessionRejectedFunction = func;
         return this;
     }
-    public declareUserDisconnectFunction(func: UserDisconnectFunction): this {
-        this._userDisconnectFunction = func;
+    public declareSessionDisconnectFunction(func: SessionDisconnectFunction): this {
+        this._sessionDisconnectFunction = func;
         return this;
     }
-    public declareUserGreetingFunction(func: UserGreetingFunction): this {
-        this._userGreetingFunction = func;
+    public declareSessionGreetingFunction(func: SessionGreetingFunction): this {
+        this._sessionGreetingFunction = func;
         return this;
     }
     public declareDefaultStatusHandler(func: StatusHandler): this {
@@ -83,34 +83,34 @@ export class BarkSocket {
 
         this._io.on('connection', async (socket: SocketIO.Socket) => {
 
-            const userInitiateFunction: UserInitiateFunction = this._assertUserInitiateFunction();
-            const user: BarkSession<any> | null = await Promise.resolve(userInitiateFunction(socket.handshake.headers));
+            const sessionInitiateFunction: SessionInitiateFunction = this._assertSessionInitiateFunction();
+            const session: BarkSession<any> | null = await Promise.resolve(sessionInitiateFunction(socket.handshake.headers));
 
-            if (!user) {
+            if (!session) {
                 socket.disconnect();
-                if (this._userRejectedFunction) {
-                    this._userRejectedFunction(socket.handshake.headers);
+                if (this._sessionRejectedFunction) {
+                    this._sessionRejectedFunction(socket.handshake.headers);
                 }
                 return;
             }
 
-            if (this._userGreetingFunction) {
-                const response: UserFunctionResponse = await this._userGreetingFunction(user);
+            if (this._sessionGreetingFunction) {
+                const response: SessionFunctionResponse = await this._sessionGreetingFunction(session);
                 this._executeAction(socket, response);
             }
 
             socket.on('disconnect', () => {
-                if (this._userDisconnectFunction) {
-                    this._userDisconnectFunction(user);
+                if (this._sessionDisconnectFunction) {
+                    this._sessionDisconnectFunction(session);
                 }
             });
 
             socket.on('message', async (message: string) => {
 
-                const statusHandler: StatusHandler = this._getUserMessageFunction(user.currentStatus);
+                const statusHandler: StatusHandler = this._getSessionMessageFunction(session.currentStatus);
                 const executer: MiddleResponseExecuter = this._getExecuter(socket);
 
-                const response: UserFunctionResponse = await Promise.resolve(statusHandler(user, message, executer));
+                const response: SessionFunctionResponse = await Promise.resolve(statusHandler(session, message, executer));
 
                 this._executeAction(socket, response);
             });
@@ -150,12 +150,12 @@ export class BarkSocket {
 
     private _getExecuter(socket: SocketIO.Socket): MiddleResponseExecuter {
 
-        return (response: UserFunctionResponse): void => {
+        return (response: SessionFunctionResponse): void => {
             this._executeAction(socket, response);
         };
     }
 
-    private _executeAction(socket: SocketIO.Socket, response: UserFunctionResponse) {
+    private _executeAction(socket: SocketIO.Socket, response: SessionFunctionResponse) {
 
         if (!response) {
             return;
@@ -169,21 +169,21 @@ export class BarkSocket {
         }
     }
 
-    private _assertUserInitiateFunction(): UserInitiateFunction {
+    private _assertSessionInitiateFunction(): SessionInitiateFunction {
 
-        if (this._userInitiateFunction) {
-            return this._userInitiateFunction;
+        if (this._sessionInitiateFunction) {
+            return this._sessionInitiateFunction;
         }
-        throw new Error('[BARK-SHELL] User initiate function is required');
+        throw new Error('[BARK-SHELL] Session initiate function is required');
     }
 
-    private _getUserMessageFunction(status: string | undefined): StatusHandler {
+    private _getSessionMessageFunction(status: string | undefined): StatusHandler {
 
         if (!status) {
             if (this._defaultStatusHandler) {
                 return this._defaultStatusHandler;
             }
-            throw new Error('[BARK-SHELL] User message function is required');
+            throw new Error('[BARK-SHELL] Session message function is required');
         }
 
         if (this._statusHandlers.has(status)) {
@@ -192,6 +192,6 @@ export class BarkSocket {
         if (this._defaultStatusHandler) {
             return this._defaultStatusHandler;
         }
-        throw new Error('[BARK-SHELL] User message function is required');
+        throw new Error('[BARK-SHELL] Session message function is required');
     }
 }

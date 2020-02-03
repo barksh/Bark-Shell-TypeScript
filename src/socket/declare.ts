@@ -7,27 +7,27 @@
 import { BarkShellResponse } from "../declare";
 import { BarkSession } from "../session/session";
 
-export type UserFunctionResponse =
+export type SessionFunctionResponse =
     BarkShellResponse
     | BarkShellResponse[]
     | null;
 
-export type MiddleResponseExecuter = (response: UserFunctionResponse) => void;
+export type MiddleResponseExecuter = (response: SessionFunctionResponse) => void;
 
-export type UserInitiateFunction = (headers: Record<string, string>) => (
+export type SessionInitiateFunction = (headers: Record<string, string>) => (
     BarkSession
     | Promise<BarkSession>
     | null
     | Promise<null>
 );
 
-export type UserRejectedFunction = (headers: Record<string, string>) => (void | Promise<void>);
-export type UserDisconnectFunction = (user: BarkSession) => (void | Promise<void>);
-export type UserGreetingFunction = (user: BarkSession) => (
-    UserFunctionResponse
-    | Promise<UserFunctionResponse>
+export type SessionRejectedFunction = (headers: Record<string, string>) => (void | Promise<void>);
+export type SessionDisconnectFunction = (session: BarkSession) => (void | Promise<void>);
+export type SessionGreetingFunction = (session: BarkSession) => (
+    SessionFunctionResponse
+    | Promise<SessionFunctionResponse>
 );
-export type StatusHandler = (user: BarkSession, message: string, executer: MiddleResponseExecuter) => (
-    UserFunctionResponse
-    | Promise<UserFunctionResponse>
+export type StatusHandler = (session: BarkSession, message: string, executer: MiddleResponseExecuter) => (
+    SessionFunctionResponse
+    | Promise<SessionFunctionResponse>
 );

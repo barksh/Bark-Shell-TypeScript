@@ -26,8 +26,8 @@ const askAgeTopic: BarkTopic = BarkTopic.create('ask-age')
 const listTopic: BarkTopic = BarkTopic.create('list')
     .addExample(`Add to my list`)
     .addExample(`Things to do`)
-    .useExecutable((currentUser: BarkSession) => {
-        currentUser.pushStatus('batch');
+    .useExecutable((currentSession: BarkSession) => {
+        currentSession.pushStatus('batch');
         return [
             'Entered Batch Mode',
             'Here we goes',
@@ -38,18 +38,18 @@ shell.addTopic(greetingTopic).addTopic(askAgeTopic).addTopic(listTopic);
 const bot: BarkBot = shell.generate();
 
 BarkSocket.create()
-    .declareUserInitiateFunction((headers) => {
+    .declareSessionInitiateFunction((headers) => {
         console.log('hello');
         return null;
     })
-    .declareStatusHandler('initial', async (user: BarkSession, message: string) => {
+    .declareStatusHandler('initial', async (session: BarkSession, message: string) => {
         const topic: BarkTopic | null = bot.answer(message);
         if (!topic) {
             return {
                 message: `I can't understand you`,
             };
         }
-        const response: BarkShellResponse = await topic.autoResponse(user, message);
+        const response: BarkShellResponse = await topic.autoResponse(session, message);
         return response;
     })
     .declareStatusHandler('batch', async (_: BarkSession, message: string, executer: MiddleResponseExecuter) => {
@@ -59,26 +59,26 @@ BarkSocket.create()
             message: `${message}, added`,
         };
     })
-    .declareUserGreetingFunction((user: BarkSession) => {
+    .declareSessionGreetingFunction((session: BarkSession) => {
         return {
-            message: `Hello ${user.authorization}`,
+            message: `Hello ${session.authorization}`,
         };
     })
     .extend(app.http, '/hello');
 
 BarkSocket.create()
-    .declareUserInitiateFunction((headers) => {
+    .declareSessionInitiateFunction((headers) => {
         console.log('world');
         return BarkSession.create(headers.username, 'initial');
     })
-    .declareStatusHandler('initial', async (user: BarkSession, message: string) => {
+    .declareStatusHandler('initial', async (session: BarkSession, message: string) => {
         const topic: BarkTopic | null = bot.answer(message);
         if (!topic) {
             return {
                 message: `I can't understand you`,
             };
         }
-        const response: BarkShellResponse = await topic.autoResponse(user, message);
+        const response: BarkShellResponse = await topic.autoResponse(session, message);
         return response;
     })
     .declareStatusHandler('batch', async (_: BarkSession, message: string, executer: MiddleResponseExecuter) => {
@@ -88,9 +88,9 @@ BarkSocket.create()
             message: `${message}, added`,
         };
     })
-    .declareUserGreetingFunction((user: BarkSession) => {
+    .declareSessionGreetingFunction((session: BarkSession) => {
         return {
-            message: `Hello ${user.authorization}`,
+            message: `Hello ${session.authorization}`,
         };
     })
     .extend(app.http, '/world');

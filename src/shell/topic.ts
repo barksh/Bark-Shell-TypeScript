@@ -41,22 +41,22 @@ export class BarkTopic {
         return this._responses;
     }
 
-    public async autoResponse(user: BarkSession, message: string): Promise<BarkShellResponse> {
+    public async autoResponse(session: BarkSession, message: string): Promise<BarkShellResponse> {
 
         if (this._executable) {
-            return await this.execute(user, message);
+            return await this.execute(session, message);
         }
 
         return this.pickResponse();
     }
 
-    public async execute(user: BarkSession, message: string): Promise<BarkShellResponse> {
+    public async execute(session: BarkSession, message: string): Promise<BarkShellResponse> {
 
         if (!this._executable) {
             throw new Error('[BARK-SHELL] Executable Required');
         }
 
-        const result: TopicResponse = await Promise.resolve(this._executable(user, message));
+        const result: TopicResponse = await Promise.resolve(this._executable(session, message));
 
         if (Array.isArray(result)) {
 

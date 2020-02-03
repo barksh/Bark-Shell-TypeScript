@@ -12,7 +12,7 @@ export type TopicResponse =
     | BarkShellResponse
     | Array<BarkShellResponse | string>;
 
-export type TopicExecutable = (user: BarkSession, message: string) => (
+export type TopicExecutable = (session: BarkSession, message: string) => (
     TopicResponse
     | Promise<TopicResponse>
 );
