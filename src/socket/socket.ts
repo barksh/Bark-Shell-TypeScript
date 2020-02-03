@@ -94,6 +94,7 @@ export class BarkSocket {
             path,
             serveClient: false,
             handlePreflightRequest: this._buildPreflightRequestHandler(),
+            transports: ['websocket', 'htmlfile', 'xhr-polling', 'jsonp-polling', 'polling'],
             origins: this._allowOrigins.length > 0 ? this._allowOrigins.join(' ') : undefined,
 
             cookie: false,
@@ -176,9 +177,9 @@ export class BarkSocket {
 
         return (req: any, res: any) => {
             const headers = {
+                "Access-Control-Allow-Credentials": true,
                 "Access-Control-Allow-Headers": "Content-Type, Authorization",
                 "Access-Control-Allow-Origin": req.headers.origin,
-                "Access-Control-Allow-Credentials": true,
             };
             res.writeHead(HTTP_RESPONSE_CODE.OK, headers);
             res.end();

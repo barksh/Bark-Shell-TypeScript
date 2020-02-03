@@ -1,6 +1,6 @@
 {
   "name": "@bark-shell/typescript",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": ":penguin: Bark Shell Server for TypeScript",
   "repository": {
     "type": "git",
