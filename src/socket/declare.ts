@@ -14,7 +14,7 @@ export type SessionFunctionResponse =
 
 export type MiddleResponseExecuter = (response: SessionFunctionResponse) => void;
 
-export type SessionInitiateFunction = (headers: Record<string, string>) => (
+export type SessionInitiateFunction = (headers: Record<string, string>, authorization?: string) => (
     BarkSession
     | Promise<BarkSession>
     | null

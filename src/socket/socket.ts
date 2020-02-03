@@ -10,6 +10,7 @@ import * as SocketIO from "socket.io";
 import { PAYLOAD_TYPE } from "../declare";
 import { BarkSession } from "../session/session";
 import { MiddleResponseExecuter, SessionDisconnectFunction, SessionFunctionResponse, SessionGreetingFunction, SessionInitiateFunction, SessionRejectedFunction, StatusHandler } from "./declare";
+import { parseAuthorization } from "./util";
 
 export class BarkSocket {
 
@@ -101,7 +102,8 @@ export class BarkSocket {
         this._io.on('connection', async (socket: SocketIO.Socket) => {
 
             const sessionInitiateFunction: SessionInitiateFunction = this._assertSessionInitiateFunction();
-            const session: BarkSession<any> | null = await Promise.resolve(sessionInitiateFunction(socket.handshake.headers));
+            const headers: Record<string, string> = socket.handshake.headers;
+            const session: BarkSession<any> | null = await Promise.resolve(sessionInitiateFunction(headers, parseAuthorization(headers)));
 
             if (!session) {
                 socket.emit(PAYLOAD_TYPE.UNAUTHORIZED);
